@@ -3,14 +3,15 @@ public class Peak {
     public double endPoint;
     public double position;
     public double area;
+    public double top;
 
-    public Peak(double startPoint, double endPoint){
+    public Peak(double startPoint, double endPoint) {
         this.startPoint = startPoint;
         this.endPoint = endPoint;
         this.position = (startPoint + endPoint) / 2;
     }
 
-    public void print(){
+    public void print() {
         System.out.println(startPoint + ", " + endPoint);
     }
 }

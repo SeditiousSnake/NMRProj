@@ -45,11 +45,11 @@ public class SpectrumAnalyzer {
 
         for(int i = 0; i < data.size() - 1; i++){
             if(data.get(i).getY() < settings.baseline && data.get(i + 1).getY() > settings.baseline){
-                PeakStart = findRoot(data.get(i).getX(), data.get(i+1).getX(), settings.baseline, spline);
+                PeakStart = findRoot(data.get(i).getX(), data.get(i+1).getX(),settings.tolerance, settings.baseline, spline);
             }
 
             if(data.get(i + 1).getY() < settings.baseline && data.get(i).getY() > settings.baseline){
-                PeakEnd = findRoot(data.get(i).getX(), data.get(i+1).getX(), settings.baseline, spline);
+                PeakEnd = findRoot(data.get(i).getX(), data.get(i+1).getX(), settings.tolerance, settings.baseline, spline);
             }
 
             if(!Double.isNaN(PeakStart) && !Double.isNaN(PeakEnd)){
@@ -61,7 +61,7 @@ public class SpectrumAnalyzer {
 
         for(Peak peak: peaks){
             peak.print();
-            peak.area = Integrate.compositeSimpsons(peak, settings.baseline, spline);
+            peak.area = Integrate.romberg(peak, settings.baseline, spline, settings.tolerance);
             System.out.println(peak.area);
         }
 
@@ -71,7 +71,7 @@ public class SpectrumAnalyzer {
     }
 
     //Uses bisection
-    static public double findRoot(double endpointA, double endpointB, double baseline, CubicSpline spline){
+    static public double findRoot(double endpointA, double endpointB, double tolerance, double baseline, CubicSpline spline){
         double FA = spline.f(endpointA, baseline);
         double FP;
         double root;
@@ -80,7 +80,7 @@ public class SpectrumAnalyzer {
             root = endpointA + (endpointB - endpointA) / 2;
             FP = spline.f(root, baseline);
 
-            if ((FP == 0) || ((endpointB - endpointA) / 2 < .00000000001)){
+            if ((FP == 0) || ((endpointB - endpointA) / 2 < tolerance)){
                 return root;
             }
 
