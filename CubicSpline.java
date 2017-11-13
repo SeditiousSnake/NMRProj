@@ -108,10 +108,10 @@ public class CubicSpline {
         System.out.println("It occured at " + max_x);
     }
 
-    public double f(double x) {
+    public double f(double x, double baseline) {
         for (PieceWiseEquation equation : pieceWiseEquations) {
             if (x >= equation.rangeStart && x < equation.rangeEnd) {
-                return equation.getPoint(x);
+                return equation.getPoint(x) - baseline;
             }
         }
 

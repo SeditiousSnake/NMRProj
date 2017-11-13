@@ -5,9 +5,9 @@ public class Filters {
     private static int[] elevenPointSGCoefficients = {-36, 9, 44, 69, 84, 89, 84, 69, 44, 9, -36};
     private static int[] fivePointSGCoefficients = {-3, 12, 17, 12, -3};
 
-    private static int fivePointSGNormalization = 35;
-    private static int elevenPointSGNormalization = 231;
-    private static int seventeenPointSGNormalization = 323;
+    private static double fivePointSGNormalization = 35;
+    private static double elevenPointSGNormalization = 429;
+    private static double seventeenPointSGNormalization = 323;
 
 
     public static ArrayList<Point> applyBoxcar(ArrayList<Point> data, int filterSize){
@@ -36,35 +36,35 @@ public class Filters {
             double x_coord = data.get(i).getX();
             double y_coord = 0;
 
-            for(int j = (i - (filterSize - 1) / 2); j < (i +((filterSize - 1) / 2) + 1); j++){
+            for(int j = (-1 * ((filterSize - 1) / 2)); j < (((filterSize - 1) / 2) + 1); j++){
                  switch(filterSize) {
                      case 5:
-                         if (j < 0) {
-                             y_coord += fivePointSGCoefficients[j + 2] * data.get(data.size() + j).getY() / fivePointSGNormalization;
+                         if (i + j < 0) {
+                             y_coord += fivePointSGCoefficients[j + 2] * data.get(data.size() + (i + j)).getY() / fivePointSGNormalization;
                          } else {
-                             y_coord += fivePointSGCoefficients[j + 2] * data.get(data.size() + j).getY() / fivePointSGNormalization;
+                             y_coord += fivePointSGCoefficients[j + 2] * data.get((i + j) % data.size()).getY() / fivePointSGNormalization;
                          }
                          break;
 
                      case 11:
-                         if (j < 0) {
-                             y_coord += elevenPointSGCoefficients[j + 5] * data.get(data.size() + j).getY() / elevenPointSGNormalization;
+                         if (i + j < 0) {
+                             y_coord += elevenPointSGCoefficients[j + 5] * data.get(data.size() + (i + j)).getY() / elevenPointSGNormalization;
                          } else {
-                             y_coord += elevenPointSGCoefficients[j + 5] * data.get(data.size() + j).getY() / elevenPointSGNormalization;
+                             y_coord += elevenPointSGCoefficients[j + 5] * data.get((i + j) % data.size()).getY() / elevenPointSGNormalization;
                          }
                          break;
 
                      case 17:
-                         if (j < 0) {
-                             y_coord += seventeenPointSGCoefficients[j + 8] * data.get(data.size() + j).getY() / seventeenPointSGNormalization;
+                         if (i + j < 0) {
+                             y_coord += seventeenPointSGCoefficients[j + 8] * data.get(data.size() + (i + j)).getY() / seventeenPointSGNormalization;
                          } else {
-                             y_coord += seventeenPointSGCoefficients[j + 8] * data.get(data.size() + j).getY() / seventeenPointSGNormalization;
+                             y_coord += seventeenPointSGCoefficients[j + 8] * data.get((i + j) % data.size()).getY() / seventeenPointSGNormalization;
                          }
                          break;
                  }
-
-                 filteredPoints.add(new Point(x_coord, y_coord));
             }
+            filteredPoints.add(new Point(x_coord, y_coord));
+            System.out.println(x_coord + " " + y_coord);
         }
 
         return filteredPoints;

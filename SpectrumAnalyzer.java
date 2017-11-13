@@ -12,42 +12,44 @@ public class SpectrumAnalyzer {
 
         data = Filters.applyTMS(data, settings.baseline);
 
-        ArrayList<Point> filteredPoints = new ArrayList<>();
-
         for(int i = 0; i < settings.numberOfPasses; i++) {
             switch (settings.filterType) {
                 case 0:
-                    filteredPoints = data;
+                    data = data;
                     break;
 
                 case 1:
-                    filteredPoints = Filters.applyBoxcar(data, settings.filterSize);
+                    data = Filters.applyBoxcar(data, settings.filterSize);
                     break;
 
                 case 2:
-                    filteredPoints = Filters.applyTMS(data, settings.filterSize);
+                    data = Filters.applySavitzkyGolay(data, settings.filterSize);
                     break;
 
                 default:
-                    filteredPoints = data;
+                    data = data;
                     break;
             }
         }
 
-        CubicSpline spline = new CubicSpline(filteredPoints);
+//        for (Point point: data){
+//            point.print();
+//        }
+
+        CubicSpline spline = new CubicSpline(data);
 
         double PeakStart = Double.NaN;
         double PeakEnd = Double.NaN;
 
         ArrayList<Peak> peaks = new ArrayList<>();
 
-        for(int i = 0; i < filteredPoints.size() - 1; i++){
-            if(filteredPoints.get(i).getY() < settings.baseline && filteredPoints.get(i + 1).getY() > settings.baseline){
-                PeakStart = findRoot(filteredPoints.get(i).getX(), filteredPoints.get(i+1).getX(), spline);
+        for(int i = 0; i < data.size() - 1; i++){
+            if(data.get(i).getY() < settings.baseline && data.get(i + 1).getY() > settings.baseline){
+                PeakStart = findRoot(data.get(i).getX(), data.get(i+1).getX(), settings.baseline, spline);
             }
 
-            if(filteredPoints.get(i + 1).getY() < settings.baseline && filteredPoints.get(i).getY() > settings.baseline){
-                PeakEnd = findRoot(filteredPoints.get(i).getX(), filteredPoints.get(i+1).getX(), spline);
+            if(data.get(i + 1).getY() < settings.baseline && data.get(i).getY() > settings.baseline){
+                PeakEnd = findRoot(data.get(i).getX(), data.get(i+1).getX(), settings.baseline, spline);
             }
 
             if(!Double.isNaN(PeakStart) && !Double.isNaN(PeakEnd)){
@@ -59,22 +61,24 @@ public class SpectrumAnalyzer {
 
         for(Peak peak: peaks){
             peak.print();
+            peak.area = Integrate.compositeSimpsons(peak, settings.baseline, spline);
+            System.out.println(peak.area);
         }
 
-        System.out.println(peaks.size() * 2);
+        System.out.println(peaks.size());
 
         //spline.getSplinePoints(data.get(0).getX(), data.get(data.size()-1).getX(), 0.001);
     }
 
     //Uses bisection
-    static public double findRoot(double endpointA, double endpointB, CubicSpline spline){
-        double FA = spline.f(endpointA);
+    static public double findRoot(double endpointA, double endpointB, double baseline, CubicSpline spline){
+        double FA = spline.f(endpointA, baseline);
         double FP;
         double root;
 
         for (int i = 0; i < 10000; i++){
             root = endpointA + (endpointB - endpointA) / 2;
-            FP = spline.f(root);
+            FP = spline.f(root, baseline);
 
             if ((FP == 0) || ((endpointB - endpointA) / 2 < .00000000001)){
                 return root;
