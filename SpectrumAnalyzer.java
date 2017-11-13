@@ -61,7 +61,7 @@ public class SpectrumAnalyzer {
 
         for(Peak peak: peaks){
             peak.print();
-            peak.area = Integrate.romberg(peak, settings.baseline, spline, settings.tolerance);
+            peak.area = Integrate.adaptiveQuadrature(peak, settings.baseline, spline, settings.tolerance);
             System.out.println(peak.area);
         }
 

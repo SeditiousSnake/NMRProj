@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Integrate {
@@ -66,6 +67,81 @@ public class Integrate {
     }
 
     static double adaptiveQuadrature(Peak peak, double baseline, CubicSpline spline, double tolerance){
-        return 0;
+        double approx = 0;
+        int i = 1;
+        ArrayList<Double> TOL = new ArrayList<>();
+        ArrayList<Double> a = new ArrayList<>();
+        ArrayList<Double> h = new ArrayList<>();
+        ArrayList<Double> FA = new ArrayList<>();
+        ArrayList<Double> FC = new ArrayList<>();
+        ArrayList<Double> FB = new ArrayList<>();
+        ArrayList<Double> S = new ArrayList<>();
+        ArrayList<Double> L = new ArrayList<>();
+
+        TOL.add(10 * tolerance);
+        a.add(peak.startPoint);
+        h.add((peak.endPoint - peak.startPoint) / 2);
+        FA.add(spline.f(peak.startPoint, baseline));
+        FC.add(spline.f(peak.startPoint + h.get(i - 1), baseline));
+        FB.add(spline.f(peak.endPoint, baseline));
+        S.add(h.get(i-1) * (FA.get(i-1) + 4*FC.get(i-1) + FB.get(i-1)) / 3);
+        L.add((double) 1);
+
+        double[] v = new double[8];
+
+        double FD;
+        double FE;
+        double S1;
+        double S2;
+
+        while (i > 0){
+            //Step 3 of book's adaptive quadrature
+            FD = spline.f(a.get(i - 1) + h.get(i - 1) /2, baseline);
+            FE = spline.f(a.get(i - 1) + 3 * h.get(i - 1) / 2, baseline);
+            S1 = h.get(i - 1) * (FA.get(i - 1) + 4 * FD + FC.get(i - 1)) / 6;
+            S2 = h.get(i - 1) * (FC.get(i - 1) + 4 * FE + FB.get(i - 1)) / 6;
+            v[0] = a.get(i - 1);
+            v[1] = FA.get(i - 1);
+            v[2] = FC.get(i - 1);
+            v[3] = FB.get(i - 1);
+            v[4] = h.get(i - 1);
+            v[5] = TOL.get(i - 1);
+            v[6] = S.get(i - 1);
+            v[7] = L.get(i - 1);
+
+            //Step 4
+            i--;
+
+            if (Math.abs(S1 + S2 - v[6]) < v[5]) {
+                approx += S1 + S2;
+            } else {
+                i++;
+                set(a, i, v[0] + v[4]);
+                set(FA, i, v[2]);
+                set(FC, i, FE);
+                set(FB, i, v[3]);
+                set(h, i, v[4] / 2);
+                set(TOL, i, v[5] / 2);
+                set(S, i, S2);
+                set(L, i, v[7] + 1);
+
+                i++;
+                set(a, i, v[0]);
+                set(FA, i, v[1]);
+                set(FC, i, FD);
+                set(FB, i, v[2]);
+                set(h, i, h.get(i-2));
+                set(TOL, i, TOL.get(i-2));
+                set(S, i, S1);
+                set(L, i, L.get(i - 2));
+            }
+        }
+
+        return approx;
+    }
+
+    private static void set(ArrayList<Double> list, int index, double value){
+        if(list.size() >= index) list.set(index - 1, value);
+        else list.add(index-1, value);
     }
 }
