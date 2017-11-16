@@ -2,6 +2,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Integrate {
+    //Composite Simpson's Rule from page 205 of the book
     static double compositeSimpsons(Peak peak, double baseline, CubicSpline spline){
         int intervals = 50;
         double h = (peak.endPoint - peak.startPoint) / intervals;
@@ -25,6 +26,7 @@ public class Integrate {
         return approximation;
     }
 
+    //Romberg Integration from page 216 of the book
     static double romberg(Peak peak, double baseline, CubicSpline spline, double tolerance){
         ArrayList<Double> row1 = new ArrayList<>();
         ArrayList<Double> row2 = new ArrayList<>();
@@ -66,6 +68,7 @@ public class Integrate {
         return row1.get(row1.size() - 1);
     }
 
+    //Adaptive Quadrature from page 224 of the book
     static double adaptiveQuadrature(Peak peak, double baseline, CubicSpline spline, double tolerance){
         double approx = 0;
         int i = 1;
@@ -140,6 +143,21 @@ public class Integrate {
         return approx;
     }
 
+    //Attempt at Guassian Quadrature, can't figure out why this isn't accurate
+    public static double guassianQuadrature(Peak peak, double baseline, CubicSpline spline){
+        double a = peak.startPoint;
+        double b = peak.endPoint;
+        double root1 = Math.sqrt(3) / 3;
+        double root2 = -root1;
+
+        double term1 = spline.gaussianF((b+a)/2, ((b-a)*root1 + (b + a)) / 2, baseline) * (b - a) / 2;
+        double term2 = spline.gaussianF((b+a)/2, ((b-a)*root2 + (b + a)) / 2, baseline) * (b - a) / 2;
+
+        return term1 + term2;
+    }
+
+    //If list element at index exits, replace it with the new element
+    //If not, add the new element
     private static void set(ArrayList<Double> list, int index, double value){
         if(list.size() >= index) list.set(index - 1, value);
         else list.add(index-1, value);

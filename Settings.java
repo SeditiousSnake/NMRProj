@@ -46,4 +46,44 @@ public class Settings {
 
         return inputString;
     }
+
+    public void printSettings(){
+        System.out.println("Program Options");
+        System.out.println("==============================================");
+        System.out.println("Baseline Adjustement \t:\t" + baseline);
+        System.out.println("Tolerance \t:\t" + tolerance);
+        switch(filterType){
+            case(0): System.out.println("No filter");
+                break;
+
+            case(1): System.out.println("Boxcar Filtering");
+                System.out.println("Boxcar Size (Cyclic)\t:\t" + filterSize);
+                System.out.println("Boxcar Passes\t:\t" + numberOfPasses);
+                break;
+
+            case(2): System.out.println("Savitzky Golay Filtering");
+                System.out.println("SG Filter Size (Cyclic)\t:\t" + filterSize);
+                System.out.println("SG Filter Passes\t:\t" + numberOfPasses);
+                break;
+        }
+        System.out.println();
+
+        System.out.println("Integration Method");
+        System.out.println("==============================================");
+        switch(integrationTechnique){
+            case(0): System.out.println("Composite Simpson");
+                break;
+            case(1): System.out.println("Romberg");
+                break;
+            case(2): System.out.println("Adaptive Quadrature");
+                break;
+            case(3): System.out.println("Gaussian Quadrature");
+                break;
+        }
+        System.out.println();
+
+        System.out.println("Plot File Data");
+        System.out.println("==============================================");
+        System.out.println("File: " + inputFileName);
+    }
 }

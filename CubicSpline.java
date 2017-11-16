@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+//Cubic Splines are made up of piecewise equations
 public class CubicSpline {
     ArrayList<Point> dataPoints;
     double[] h;
@@ -84,6 +85,7 @@ public class CubicSpline {
         pieceWiseEquations.add(new PieceWiseEquation(coefficients, start, end));
     }
 
+    //Used to generate spline points that can be put into gnuplot to graph the spline
     public void getSplinePoints(double start, double end, double increment) {
         int currentPiece = 0;
         double max = 0;
@@ -108,10 +110,23 @@ public class CubicSpline {
         System.out.println("It occured at " + max_x);
     }
 
+    //Returns a point from the spline
     public double f(double x, double baseline) {
         for (PieceWiseEquation equation : pieceWiseEquations) {
             if (x >= equation.rangeStart && x < equation.rangeEnd) {
                 return equation.getPoint(x) - baseline;
+            }
+        }
+
+        return Double.NaN;
+    }
+
+    //Used for Guassian Quadrature. Allows the user to evaluate a piecewise equation from
+    //the spline outside of its normal bounds.
+    public double gaussianF(double x, double t, double baseline){
+        for (PieceWiseEquation equation : pieceWiseEquations) {
+            if (x >= equation.rangeStart && x < equation.rangeEnd) {
+                return equation.getPoint(t) - baseline;
             }
         }
 

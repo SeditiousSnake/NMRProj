@@ -5,6 +5,7 @@ import java.util.Collections;
 public class SpectrumAnalyzer {
     public static void main(String Args[]) throws IOException{
         Settings settings = new Settings("src/nmr.in");
+        settings.printSettings();
 
         ArrayList<Point> data = Point.getData(settings.inputFileName);
 
@@ -32,10 +33,6 @@ public class SpectrumAnalyzer {
             }
         }
 
-//        for (Point point: data){
-//            point.print();
-//        }
-
         CubicSpline spline = new CubicSpline(data);
 
         double PeakStart = Double.NaN;
@@ -59,15 +56,40 @@ public class SpectrumAnalyzer {
             }
         }
 
+        //Integrate the peaks to find their areas
         for(Peak peak: peaks){
-            peak.print();
-            peak.area = Integrate.adaptiveQuadrature(peak, settings.baseline, spline, settings.tolerance);
-            System.out.println(peak.area);
+            switch (settings.integrationTechnique) {
+                case 0:
+                    peak.area = Integrate.compositeSimpsons(peak, settings.baseline, spline);
+                    break;
+
+                case 1:
+                    peak.area = Integrate.romberg(peak, settings.baseline, spline, settings.tolerance);
+                    break;
+
+                case 2:
+                    peak.area = Integrate.adaptiveQuadrature(peak, settings.baseline, spline, settings.tolerance);
+                    break;
+
+                case 3:
+                    peak.area = Integrate.guassianQuadrature(peak, settings.baseline, spline);
+                    break;
+
+                default:
+                    peak.area = Integrate.adaptiveQuadrature(peak, settings.baseline, spline, settings.tolerance);
+            }
         }
 
-        System.out.println(peaks.size());
+        for(Peak peak: peaks){
+            peak.findTop(settings.baseline, spline);
+        }
 
-        //spline.getSplinePoints(data.get(0).getX(), data.get(data.size()-1).getX(), 0.001);
+        calculateHydrogenCounts(peaks);
+
+        //Print out the data for each peak
+        for(int i = 0; i < peaks.size(); i++){
+            peaks.get(i).print(i + 1);
+        }
     }
 
     //Uses bisection
@@ -94,5 +116,17 @@ public class SpectrumAnalyzer {
 
         System.out.println("Method failed after " + 10000 + " iterations.");
         return Double.NaN;
+    }
+
+    static private void calculateHydrogenCounts(ArrayList<Peak> peaks){
+        double smallestArea = peaks.get(0).area;
+
+        for(Peak peak: peaks){
+            if(peak.area < smallestArea) smallestArea = peak.area;
+        }
+
+        for(Peak peak: peaks){
+            peak.hydrogens = (int) (peak.area / smallestArea);
+        }
     }
 }

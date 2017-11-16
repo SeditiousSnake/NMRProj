@@ -64,7 +64,6 @@ public class Filters {
                  }
             }
             filteredPoints.add(new Point(x_coord, y_coord));
-            System.out.println(x_coord + " " + y_coord);
         }
 
         return filteredPoints;
@@ -82,7 +81,8 @@ public class Filters {
             }
         }
 
-        System.out.println(highestPointAboveTMS);
+        System.out.println("Plot shifted " + highestPointAboveTMS + " ppm for TMS calibration");
+        System.out.println("");
 
         ArrayList<Point> dataAdjustedForTMS = new ArrayList<>();
 
