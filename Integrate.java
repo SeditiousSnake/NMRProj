@@ -145,15 +145,36 @@ public class Integrate {
 
     //Attempt at Guassian Quadrature, can't figure out why this isn't accurate
     public static double guassianQuadrature(Peak peak, double baseline, CubicSpline spline){
-        double a = peak.startPoint;
-        double b = peak.endPoint;
-        double root1 = Math.sqrt(3) / 3;
-        double root2 = -root1;
+        double X[] = new double[8];
+        double W[] = new double[8];
 
-        double term1 = spline.gaussianF((b+a)/2, ((b-a)*root1 + (b + a)) / 2, baseline) * (b - a) / 2;
-        double term2 = spline.gaussianF((b+a)/2, ((b-a)*root2 + (b + a)) / 2, baseline) * (b - a) / 2;
+        X[0] = -9.602898564975363E-001;
+        X[1] = -7.966664774136267E-001;
+        X[2] = -5.255324099163290E-001;
+        X[3] = -1.834346424956498E-001;
+        X[4] = 1.834346424956498E-001;
+        X[5] =  5.255324099163290E-001;
+        X[6] =  7.966664774136267E-001;
+        X[7] =  9.602898564975363E-001;
+        W[0] =  1.012285362903706E-001;
+        W[1] =  2.223810344533744E-001;
+        W[2] =  3.137066458778874E-001;
+        W[3] =  3.626837833783621E-001;
+        W[4] =  3.626837833783621E-001;
+        W[5] =  3.137066458778874E-001;
+        W[6] =  2.223810344533744E-001;
+        W[7] = 1.012285362903706E-001;
 
-        return term1 + term2;
+        double sum = 0;
+
+        double A = peak.startPoint;
+        double B = peak.endPoint;
+
+        for(int i = 0; i < 8; i++){
+            sum += W[i] * spline.f(((B-A)*X[i]+(A+B)) / 2, baseline) * (B-A) / 2;
+        }
+
+        return sum;
     }
 
     //If list element at index exits, replace it with the new element

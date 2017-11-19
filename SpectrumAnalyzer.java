@@ -1,11 +1,14 @@
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class SpectrumAnalyzer {
     public static void main(String Args[]) throws IOException{
-        Settings settings = new Settings("src/nmr.in");
+        Settings settings = new Settings(Args[0]);
         settings.printSettings();
+        String outputString = "";
+        outputString += settings.getSettingsString();
 
         ArrayList<Point> data = Point.getData(settings.inputFileName);
 
@@ -89,10 +92,16 @@ public class SpectrumAnalyzer {
         //Print out the data for each peak
         for(int i = 0; i < peaks.size(); i++){
             peaks.get(i).print(i + 1);
+            outputString += peaks.get(i).getPeakString(i + 1);
         }
+
+        PrintWriter out = new PrintWriter(settings.outputFileName);
+        out.println(outputString);
+
+        out.close();
     }
 
-    //Uses bisection
+    //Uses bisection to find roots between two endpoints
     static public double findRoot(double endpointA, double endpointB, double tolerance, double baseline, CubicSpline spline){
         double FA = spline.f(endpointA, baseline);
         double FP;

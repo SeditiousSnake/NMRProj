@@ -151,12 +151,4 @@ public class CubicSpline {
             return coefficients[0] + coefficients[1] * (x - rangeStart)+ coefficients[2] * Math.pow((x - rangeStart), 2) + coefficients[3] * Math.pow((x - rangeStart), 3);
         }
     }
-
-    public void findTop(Peak peak){
-        double top = f(peak.startPoint, 0);
-        int increments = 10000;
-        for (int i = 1; i < increments; i++){
-
-        }
-    }
 }

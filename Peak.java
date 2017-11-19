@@ -9,7 +9,7 @@ public class Peak {
     public Peak(double startPoint, double endPoint) {
         this.startPoint = startPoint;
         this.endPoint = endPoint;
-        this.position = (startPoint + endPoint) / 2;
+        this.position = (endPoint - startPoint) / 2;
     }
 
     public void findTop(double baseline, CubicSpline spline){
@@ -29,9 +29,20 @@ public class Peak {
 
     public void print(int peakNumber) {
         System.out.println("Peak " + peakNumber);
-        System.out.println("\tBegin: " + startPoint +" \tEnd: " + endPoint + " \tLocation: " + (startPoint + endPoint / 2));
+        System.out.println("\tBegin: " + startPoint +" \tEnd: " + endPoint + " \tLocation: " + position);
         System.out.println("\tTop: " + top);
         System.out.println("\tArea: " + area);
         System.out.println("\tHydrogens: " + hydrogens);
+    }
+
+    public String getPeakString(int peakNumber){
+        String peakString = "\n";
+        peakString += ("Peak " + peakNumber + "\n");
+        peakString += ("\tBegin: " + startPoint +" \tEnd: " + endPoint + " \tLocation: " + position + "\n");
+        peakString += ("\tTop: " + top + "\n");
+        peakString += ("\tArea: " + area + "\n");
+        peakString += ("\tHydrogens: " + hydrogens + "\n");
+
+        return peakString;
     }
 }

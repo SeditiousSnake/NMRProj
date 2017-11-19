@@ -86,4 +86,47 @@ public class Settings {
         System.out.println("==============================================");
         System.out.println("File: " + inputFileName);
     }
+
+    public String getSettingsString(){
+        String settingsString = "";
+        settingsString += ("Program Options" + "\n");
+        settingsString += ("==============================================" + "\n");
+        settingsString += ("Baseline Adjustement \t:\t" + baseline + "\n");
+        settingsString += ("Tolerance \t:\t" + tolerance + "\n");
+        switch(filterType){
+            case(0): settingsString += ("No filter" + "\n");
+                break;
+
+            case(1): settingsString += ("Boxcar Filtering" + "\n");
+                settingsString += ("Boxcar Size (Cyclic)\t:\t" + filterSize + "\n");
+                settingsString += ("Boxcar Passes\t:\t" + numberOfPasses + "\n");
+                break;
+
+            case(2): settingsString += ("Savitzky Golay Filtering" + "\n");
+                settingsString += ("SG Filter Size (Cyclic)\t:\t" + filterSize + "\n");
+                settingsString += ("SG Filter Passes\t:\t" + numberOfPasses + "\n");
+                break;
+        }
+        settingsString += ("" + "\n");
+
+        settingsString += ("Integration Method" + "\n");
+        settingsString += ("==============================================" + "\n");
+        switch(integrationTechnique){
+            case(0): settingsString += ("Composite Simpson" + "\n");
+                break;
+            case(1): settingsString += ("Romberg" + "\n");
+                break;
+            case(2): settingsString += ("Adaptive Quadrature" + "\n");
+                break;
+            case(3): settingsString += ("Gaussian Quadrature" + "\n");
+                break;
+        }
+        settingsString += ("");
+
+        settingsString += ("Plot File Data" + "\n");
+        settingsString += ("==============================================" + "\n");
+        settingsString += ("File: " + inputFileName + "\n");
+
+        return settingsString;
+    }
 }
